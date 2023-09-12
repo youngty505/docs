@@ -478,7 +478,7 @@ function writeFile(file_name, configs) {
         let cfg = configs[k];
 
         // Add property name as a header
-        configs_content += '=== ' + cfg.name + '\n\n';
+        configs_content += '== ' + cfg.name + '\n\n';
 
         // Add property description
         configs_content += cfg.description;
