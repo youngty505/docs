@@ -296,7 +296,7 @@ def build_dict(cmd_dict, executed_command, explanation, usage, it_flags, flag_li
 # Build the resulting markdown file
 def build_md(md_result, executed_command, explanation, usage, it_flags, flag_list, separate_files):
 
-    rpk_gen_dir = "tools/rpk/gen/"
+    rpk_gen_dir = "gen/"
 
     if separate_files:
         md_result += "---"
@@ -356,10 +356,19 @@ def build_md(md_result, executed_command, explanation, usage, it_flags, flag_lis
 
     if separate_files:
         filename = rpk_gen_dir + executed_command.replace(" ","-") + ".mdx"
+
+        # Check if directory exists, if not create it
+        if not os.path.exists(rpk_gen_dir):
+            os.makedirs(rpk_gen_dir)
+
+        # Check if file exists, if it does then delete it
+        if os.path.exists(filename):
+            os.remove(filename)
+
+        # Write to the file
         with open(filename, "w") as filetowrite:
             md_result = mdify(md_result)
             filetowrite.write(md_result)
-            print("Wrote",filename)
 
     return md_result
 
@@ -454,7 +463,10 @@ rpk.ac-<name>
 md_result = md_result + suggestedReadings
 
 try:
-    file = "docs/reference/rpk-commands.json"
+    json_path = "gen/json"
+    file = json_path + "/rpk-commands.json"
+    if not os.path.exists(json_path):
+        os.makedirs(json_path)
     with open(file, "w") as filetowrite:
         filetowrite.write(json_object)
     print("The rpk commands have been successfully generated at",file)
@@ -462,7 +474,7 @@ except Exception as e:
     print("Error generating the rpk commands file " + e)
 
 dir1 = "docs/reference/rpk"
-dir2 = "tools/rpk/gen"
+dir2 = "gen"
 #outdir = "tools/rpk/diff"
 
 cmp_rpk_mdx(dir1, dir2)
