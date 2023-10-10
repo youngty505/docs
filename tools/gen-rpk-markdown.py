@@ -372,6 +372,62 @@ def build_md(md_result, executed_command, explanation, usage, it_flags, flag_lis
 
     return md_result
 
+def build_ascii(ascii_result, executed_command, explanation, usage, it_flags, flag_list):
+
+    rpk_gen_dir = "gen/"
+    ascii_result += "= "+ executed_command
+    ascii_result += "\n:description: " + executed_command
+    ascii_result += "\n " + explanation
+
+    usage_val_start = usage.find("Usage:") + len("Usage:")
+    aliases_start = usage.find("Aliases:")
+    aliases_val_start = usage.find("Aliases:") + len("Aliases:")
+
+    usage_val = usage[usage_val_start:aliases_start] if aliases_start >= 0 else usage[usage_val_start:]
+
+    ascii_result += "\n\n== Usage"
+    ascii_result += """\n\n[,bash]"""
+    ascii_result += """----"""
+    ascii_result += usage_val.strip()
+    ascii_result += """\n---"""
+
+    if aliases_start >= 0:
+        ascii_result += "\n\n== Aliases"
+        ascii_result += """\n\n[,bash]"""
+        ascii_result += """----"""
+        ascii_result += usage[aliases_val_start:].strip()
+        ascii_result += """\n---"""
+
+    if it_flags:
+        ascii_result += """ \n\n== Flags\n"""
+        ascii_result += """ \n\n[cols="1m,1a,2a]"""
+        ascii_result += """ \n|=== """
+        ascii_result += """ \n|*Value* |*Type* |*Description*"""
+
+    for flag in flag_list:
+        ascii_result += """\n\n"""
+        ascii_result += "|"+flag.value+" |"
+        ascii_result += "|"+flag.type+" |"
+        ascii_result += "|"+flag.explanation+" |"
+        ascii_result += "\n\n"
+
+    filename = rpk_gen_dir + executed_command.replace(" ","-") + ".mdx"
+
+    # Check if directory exists, if not create it
+    if not os.path.exists(rpk_gen_dir):
+        os.makedirs(rpk_gen_dir)
+
+    # Check if file exists, if it does then delete it
+    if os.path.exists(filename):
+        os.remove(filename)
+
+    # Write to the file
+    with open(filename, "w") as filetowrite:
+        ascii_result = mdify(ascii_result)
+        filetowrite.write(ascii_result)
+
+    return ascii_result
+
 result = subprocess.run(['rpk', 'version'], stdout=subprocess.PIPE)
 rpk_version = result.stdout.decode('utf-8').strip(" \n")
 
@@ -446,7 +502,6 @@ for command in it_commands:
 
 cmd_dict['rpk_version'] = rpk_version
 json_object = json.dumps(cmd_dict, indent = 4) 
-#print(json_object)
 
 md_result = md_result.replace(
     """  rpk-<name>
