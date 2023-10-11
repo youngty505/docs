@@ -372,12 +372,12 @@ def build_md(md_result, executed_command, explanation, usage, it_flags, flag_lis
 
     return md_result
 
-def build_ascii(ascii_result, executed_command, explanation, usage, it_flags, flag_list):
+def build_ascii(ascii_result, executed_command, explanation, usage, it_flags, flag_list, separate_files):
 
     rpk_gen_dir = "gen/"
     ascii_result += "= "+ executed_command
     ascii_result += "\n:description: " + executed_command
-    ascii_result += "\n " + explanation
+    ascii_result += "\n\n" + explanation
 
     usage_val_start = usage.find("Usage:") + len("Usage:")
     aliases_start = usage.find("Aliases:")
@@ -386,32 +386,32 @@ def build_ascii(ascii_result, executed_command, explanation, usage, it_flags, fl
     usage_val = usage[usage_val_start:aliases_start] if aliases_start >= 0 else usage[usage_val_start:]
 
     ascii_result += "\n\n== Usage"
-    ascii_result += """\n\n[,bash]"""
-    ascii_result += """----"""
+    ascii_result += """\n\n[,bash]\n"""
+    ascii_result += """----\n"""
     ascii_result += usage_val.strip()
-    ascii_result += """\n---"""
+    ascii_result += """\n----"""
 
     if aliases_start >= 0:
         ascii_result += "\n\n== Aliases"
         ascii_result += """\n\n[,bash]"""
         ascii_result += """----"""
         ascii_result += usage[aliases_val_start:].strip()
-        ascii_result += """\n---"""
+        ascii_result += """\n----"""
 
     if it_flags:
-        ascii_result += """ \n\n== Flags\n"""
-        ascii_result += """ \n\n[cols="1m,1a,2a]"""
-        ascii_result += """ \n|=== """
-        ascii_result += """ \n|*Value* |*Type* |*Description*"""
+        ascii_result += """\n\n== Flags"""
+        ascii_result += """\n\n[cols="1m,1a,2a]"""
+        ascii_result += """\n|==="""
+        ascii_result += """\n|*Value* |*Type* |*Description*"""
 
     for flag in flag_list:
         ascii_result += """\n\n"""
         ascii_result += "|"+flag.value+" |"
         ascii_result += "|"+flag.type+" |"
         ascii_result += "|"+flag.explanation+" |"
-        ascii_result += "\n\n"
 
-    filename = rpk_gen_dir + executed_command.replace(" ","-") + ".mdx"
+    ascii_result += "\n|==="
+    filename = rpk_gen_dir + executed_command.replace(" ","-") + ".adoc"
 
     # Check if directory exists, if not create it
     if not os.path.exists(rpk_gen_dir):
@@ -463,10 +463,6 @@ This section lists each rpk command in alphabetical order, along with a table of
 
 executed_command = "rpk"
 
-md_result = build_md(
-    md_result, executed_command, explanation, usage, it_flags, flag_list, False
-)
-
 for command in it_commands:
     result = execute_process([command])
     executed_command = "rpk " + command
@@ -491,7 +487,7 @@ for command in it_commands:
 
     cmd_dict = build_dict(cmd_dict, executed_command, explanation, usage, it_flags, flag_list);
 
-    md_result = build_md(
+    md_result = build_ascii(
         "", executed_command, explanation, usage, it_flags, flag_list, True
     )
  
