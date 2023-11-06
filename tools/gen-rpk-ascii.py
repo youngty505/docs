@@ -17,10 +17,13 @@ suggestedReadings = """
 
 
 cmd_dict = {}
+basic_commands_docker = ["docker","exec","-it"] 
+basic_commands_docker.append("rp-0") #modify to your cluster name
+rpk_basic_command = ["rpk"]
 
 def assert_period(s):return s if s.endswith('.') else s + '.'
 
-def mdify(s):
+def escape_chars(s):
     s = s.replace("redpanda.yaml", "`redpanda.yaml`")
     s = s.replace("<IP>", "|IP|")
     s = s.replace("<port>", "|port|")
@@ -34,7 +37,7 @@ def mdify(s):
     s = s.replace("./<timestamp>-bundle.zip", "./&lt;timestamp&gt;-bundle.zip")
     return s
 
-def cmp_rpk_mdx(dir1, dir2, outdir=""):
+def cmp_rpk_ascii(dir1, dir2, outdir=""):
     if outdir:
         for root1, _, files1 in os.walk(dir1):
             for file1 in files1:
@@ -66,9 +69,9 @@ class Flag:
 def execute_process(commands):
     if len(commands) > 0:
         commands = commands[0].split(" ")
-    commands.insert(0, "rpk")
-    commands.append("-h")
-    process = subprocess.run(commands, stdout=subprocess.PIPE)
+    commands_to_execute = basic_commands_docker + rpk_basic_command + commands
+    commands_to_execute.append("-h")
+    process = subprocess.run(commands_to_execute, stdout=subprocess.PIPE)
     return process.stdout.decode("utf-8")
 
 
@@ -293,8 +296,8 @@ def build_dict(cmd_dict, executed_command, explanation, usage, it_flags, flag_li
     return cmd_dict
 
 
-# Build the resulting markdown file
-def build_md(md_result, executed_command, explanation, usage, it_flags, flag_list, separate_files):
+# Build the resulting asciidoc file
+def build_ascii(md_result, executed_command, explanation, usage, it_flags, flag_list, separate_files):
 
     rpk_gen_dir = "gen/"
 
@@ -355,7 +358,7 @@ def build_md(md_result, executed_command, explanation, usage, it_flags, flag_lis
     md_result += "\n"
 
     if separate_files:
-        filename = rpk_gen_dir + executed_command.replace(" ","-") + ".mdx"
+        filename = rpk_gen_dir + executed_command.replace(" ","-") + ".adoc"
 
         # Check if directory exists, if not create it
         if not os.path.exists(rpk_gen_dir):
@@ -367,7 +370,7 @@ def build_md(md_result, executed_command, explanation, usage, it_flags, flag_lis
 
         # Write to the file
         with open(filename, "w") as filetowrite:
-            md_result = mdify(md_result)
+            md_result = escape_chars(md_result)
             filetowrite.write(md_result)
 
     return md_result
@@ -423,13 +426,18 @@ def build_ascii(ascii_result, executed_command, explanation, usage, it_flags, fl
 
     # Write to the file
     with open(filename, "w") as filetowrite:
-        ascii_result = mdify(ascii_result)
+        ascii_result = escape_chars(ascii_result)
         filetowrite.write(ascii_result)
 
     return ascii_result
 
-result = subprocess.run(['rpk', 'version'], stdout=subprocess.PIPE)
+## run basic command first
+first_command = basic_commands_docker + rpk_basic_command + ["version"]
+print("Running ")
+print(" ".join(first_command))
+result = subprocess.run(first_command, stdout=subprocess.PIPE)
 rpk_version = result.stdout.decode('utf-8').strip(" \n")
+print("Redpanda version: " + rpk_version)
 
 result = execute_process([])
 
@@ -528,4 +536,4 @@ dir1 = "docs/reference/rpk"
 dir2 = "gen"
 #outdir = "tools/rpk/diff"
 
-cmp_rpk_mdx(dir1, dir2)
+cmp_rpk_ascii(dir1, dir2)

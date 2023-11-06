@@ -1,0 +1,391 @@
+{
+    "rpk acl": {
+        "description": "Manage ACLs and SASL users.\r\n\r\nThis command space creates, lists, and deletes ACLs, as well as creates SASL\r\nusers. The help text below is specific to ACLs. To learn about SASL users,\r\ncheck the help text under the \"user\" command.\r\n\r\nWhen using SASL, ACLs allow or deny you access to certain requests. The\r\n\"create\", \"delete\", and \"list\" commands help you manage your ACLs.\r\n\r\nAn ACL is made up of five components:\r\n\r\n  * a principal (the user)\r\n  * a host the principal is allowed or denied requests from\r\n  * what resource to access (topic name, group ID, ...)\r\n  * the operation (read, write, ...)\r\n  * the permission: whether to allow or deny the above\r\n\r\nACL commands work on a multiplicative basis. If creating, specifying two\r\nprincipals and two permissions creates four ACLs: both permissions for the\r\nfirst principal, as well as both permissions for the second principal. Adding\r\ntwo resources further doubles the ACLs created.\r\n\r\nIt is recommended to be as specific as possible when granting ACLs. Granting\r\nmore ACLs than necessary per principal may inadvertently allow clients to do\r\nthings they should not, such as deleting topics or joining the wrong consumer\r\ngroup.\r\n\r\nPRINCIPALS\r\n\r\nAll ACLs require a principal. A principal is composed of two parts: the type\r\nand the name. Within Redpanda, only one type is supported, \"User\". The reason\r\nfor the prefix is that a potential future authorizer may add support for\r\nauthorizing by Group or anything else.\r\n\r\nWhen you create a user, you need to add ACLs for it before it can be used. You\r\ncan create / delete / list ACLs for that user with either \"User:bar\" or \"bar\"\r\nin the --allow-principal and --deny-principal flags. This command will add the\r\n\"User:\" prefix for you if it is missing. The wildcard '*' matches any user.\r\nCreating an ACL with user '*' grants or denies the permission for all users.\r\n\r\nHOSTS\r\n\r\nHosts can be seen as an extension of the principal, and effectively gate where\r\nthe principal can connect from. When creating ACLs, unless otherwise specified,\r\nthe default host is the wildcard '*' which allows or denies the principal from\r\nall hosts (where allow & deny are based on whether --allow-principal or\r\n--deny-principal is used). If specifying hosts, you must pair the --allow-host\r\nflag with the --allow-principal flag, and the --deny-host flag with the\r\n--deny-principal flag.\r\n\r\nRESOURCES\r\n\r\nA resource is what an ACL allows or denies access to. There are four resources\r\nwithin Redpanda: topics, groups, the cluster itself, and transactional IDs.\r\nNames for each of these resources can be specified with their respective flags.\r\n\r\nResources combine with the operation that is allowed or denied on that\r\nresource. The next section describes which operations are required for which\r\nrequests, and further fleshes out the concept of a resource.\r\n\r\nBy default, resources are specified on an exact name match (a \"literal\" match).\r\nThe --resource-pattern-type flag can be used to specify that a resource name is\r\n\"prefixed\", meaning to allow anything with the given prefix. A literal name of\r\n\"foo\" will match only the topic \"foo\", while the prefixed name of \"foo-\" will\r\nmatch both \"foo-bar\" and \"foo-baz\". The special wildcard resource name '*'\r\nmatches any name of the given resource type (--topic '*' matches all topics).\r\n\r\nOPERATIONS\r\n\r\nPairing with resources, operations are the actions that are allowed or denied.\r\nRedpanda has the following operations:\r\n\r\n    ALL                 Allows all operations below.\r\n    READ                Allows reading a given resource.\r\n    WRITE               Allows writing to a given resource.\r\n    CREATE              Allows creating a given resource.\r\n    DELETE              Allows deleting a given resource.\r\n    ALTER               Allows altering non-configurations.\r\n    DESCRIBE            Allows querying non-configurations.\r\n    DESCRIBE_CONFIGS    Allows describing configurations.\r\n    ALTER_CONFIGS       Allows altering configurations.\r\n\r\nCheck --help-operations to see which operations are required for which\r\nrequests. In flag form to set up a general producing/consuming client, you can\r\ninvoke 'rpk acl create' three times with the following (including your\r\n--allow-principal):\r\n\r\n    --operation write,read,describe --topic [topics]\r\n    --operation describe,read --group [group.id]\r\n    --operation describe,write --transactional-id [transactional.id]\r\n\r\nPERMISSIONS\r\n\r\nA client can be allowed access or denied access. By default, all permissions\r\nare denied. You only need to specifically deny a permission if you allow a wide\r\nset of permissions and then want to deny a specific permission in that set.\r\nYou could allow all operations, and then specifically deny writing to topics.\r\n\r\nMANAGEMENT\r\n\r\nCreating ACLs works on a specific ACL basis, but listing and deleting ACLs\r\nworks on filters. Filters allow matching many ACLs to be printed listed and\r\ndeleted at once. Because this can be risky for deleting, the delete command\r\nprompts for confirmation by default. More details and examples for creating,\r\nlisting, and deleting can be seen in each of the commands.\r\n\r\nUsing SASL requires setting \"enable_sasl: true\" in the redpanda section of your\r\nredpanda.yaml. User management is a separate, simpler concept that is\r\ndescribed in the user command.",
+        "usage": "Usage:\r\n  rpk acl [flags]\r\n  rpk acl [command]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for acl."
+            },
+            "--help-operations": {
+                "type": "-",
+                "description": "Print more help about ACL operations."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk cloud": {
+        "description": "Interact with Redpanda cloud",
+        "usage": "Usage:\r\n  rpk cloud [flags]\r\n  rpk cloud [command]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for cloud."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk cluster": {
+        "description": "Interact with a Redpanda cluster",
+        "usage": "Usage:\r\n  rpk cluster [flags]\r\n  rpk cluster [command]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for cluster."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk container": {
+        "description": "Manage a local container cluster",
+        "usage": "Usage:\r\n  rpk container [flags]\r\n  rpk container [command]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for container."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk debug": {
+        "description": "Debug the local Redpanda process",
+        "usage": "Usage:\r\n  rpk debug [flags]\r\n  rpk debug [command]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for debug."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk generate": {
+        "description": "Generate a configuration template for related services",
+        "usage": "Usage:\r\n  rpk generate [template] [flags]\r\n  rpk generate [command]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for generate."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk group": {
+        "description": "Describe, list, and delete consumer groups and manage their offsets.\r\n\r\nConsumer groups allow you to horizontally scale consuming from topics. A\r\nnon-group consumer consumes all records from all partitions you assign it. In\r\ncontrast, consumer groups allow many consumers to coordinate and divide work.\r\nIf you have two members in a group consuming topics A and B, each with three\r\npartitions, then both members consume three partitions. If you add another\r\nmember to the group, then each of the three members will consume two\r\npartitions. This allows you to horizontally scale consuming of topics.\r\n\r\nThe unit of scaling is a single partition. If you add more consumers to a group\r\nthan there are are total partitions to consume, then some consumers will be\r\nidle. More commonly, you have many more partitions than consumer group members\r\nand each member consumes a chunk of available partitions. One scenario where\r\nyou may want more members than partitions is if you want active standby's to\r\ntake over load immediately if any consuming member dies.\r\n\r\nHow group members divide work is entirely client driven (the \"partition\r\nassignment strategy\" or \"balancer\" depending on the client). Brokers know\r\nnothing about how consumers are assigning partitions. A broker's role in group\r\nconsuming is to choose which member is the leader of a group, forward that\r\nmember's assignment to every other member, and ensure all members are alive\r\nthrough heartbeats.\r\n\r\nConsumers periodically commit their progress when consuming partitions. Through\r\nthese commits, you can monitor just how far behind a consumer is from the\r\nlatest messages in a partition. This is called \"lag\". Large lag implies that\r\nthe client is having problems, which could be from the server being too slow,\r\nor the client being oversubscribed in the number of partitions it is consuming,\r\nor the server being in a bad state that requires restarting or removing from\r\nthe server pool, and so on.\r\n\r\nYou can manually manage offsets for a group, which allows you to rewind or\r\nforward commits. If you notice that a recent deploy of your consumers had a\r\nbug, you may want to stop all members, rewind the commits to before the latest\r\ndeploy, and restart the members with a patch.\r\n\r\nThis command allows you to list all groups, describe a group (to view the\r\nmembers and their lag), and manage offsets.",
+        "usage": "Usage:\r\n  rpk group [flags]\r\n  rpk group [command]\r\n\r\nAliases:\r\n  group, g\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for group."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk help": {
+        "description": "Help provides help for any command in the application.\r\nSimply type rpk help [path to command] for full details.",
+        "usage": "Usage:\r\n  rpk help [command] [flags]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "help for help."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk iotune": {
+        "description": "Measure filesystem performance and create IO configuration file",
+        "usage": "Usage:\r\n  rpk iotune [flags]\r\n\r",
+        "flags": {
+            "--directories": {
+                "type": "strings",
+                "description": "List of directories to evaluate."
+            },
+            "--duration": {
+                "type": "duration",
+                "description": "Duration of tests (e.g. 300ms, 1.5s, 2h45m) (default 10m0s)."
+            },
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for iotune."
+            },
+            "--no-confirm": {
+                "type": "-",
+                "description": "Disable confirmation prompt if the iotune file already exists."
+            },
+            "--out": {
+                "type": "string",
+                "description": "The file path where the IO config will be written (default \"/etc/redpanda/io-config.yaml\")."
+            },
+            "--timeout": {
+                "type": "duration",
+                "description": "The maximum time after -- to wait for iotune to complete (e.g. 300ms, 1.5s, 2h45m) (default 1h0m0s)."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk plugin": {
+        "description": "List, download, update, and remove rpk plugins.\r\n\t\r\nPlugins augment rpk with new commands.\r\n\r\nFor a plugin to be used, it must be in $HOME/.local/bin or somewhere \r\ndiscoverable by rpk in your $PATH. All plugins follow a defined naming scheme:\r\n\r\n  .rpk-<name>\r\n  .rpk.ac-<name>\r\n\r\nAll plugins are prefixed with either .rpk- or .rpk.ac-. When rpk starts up, it\r\nsearches all directories in your $PATH for any executable binary that begins\r\nwith either of those prefixes. For any binary it finds, rpk adds a command for\r\nthat name to the rpk command space itself.\r\n\r\nNo plugin name can shadow an existing rpk command, and only one plugin can\r\nexist under a given name at once. Plugins are added to the rpk command space on\r\na first-seen basis. If you have two plugins rpk-foo, and the second is\r\ndiscovered later on in the $PATH directories, then only the first will be used.\r\nThe second will be ignored.\r\n\r\nPlugins that have an .rpk.ac- prefix indicate that they support the\r\n--help-autocomplete flag. If rpk sees this, rpk will exec the plugin with that\r\nflag when rpk starts up, and the plugin will return all commands it supports as\r\nwell as short and long help test for each command. Rpk uses this return to\r\nbuild a shadow command space within rpk itself so that it looks as if the\r\nplugin exists within rpk. This is particularly useful if you enable\r\nautocompletion.\r\n\r\nThe expected return for plugins from --help-autocomplete is an array of the\r\nfollowing:\r\n\r\n  type pluginHelp struct {\r\n          Path    string   `json:\"path,omitempty\"`\r\n          Short   string   `json:\"short,omitempty\"`\r\n          Long    string   `json:\"long,omitempty\"`\r\n          Example string   `json:\"example,omitempty\"`\r\n          Args    []string `json:\"args,omitempty\"`\r\n  }\r\n\r\nwhere \"path\" is an underscore delimited argument path to a command. For\r\nexample, \"foo_bar_baz\" corresponds to the command \"rpk foo bar baz\".",
+        "usage": "Usage:\r\n  rpk plugin [flags]\r\n  rpk plugin [command]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for plugin."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk profile": {
+        "description": "Manage rpk profiles.\r\n\r\nAn rpk profile talks to a single Redpanda cluster. You can create multiple\r\nprofiles for multiple clusters and swap between them with 'rpk profile use'.\r\nMultiple profiles may be useful if, for example, you use rpk to talk to\r\na localhost cluster, a dev cluster, and a prod cluster, and you want to keep\r\nyour configuration in one place.",
+        "usage": "Usage:\r\n  rpk profile [flags]\r\n  rpk profile [command]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for profile."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk redpanda": {
+        "description": "Interact with a local Redpanda process",
+        "usage": "Usage:\r\n  rpk redpanda [flags]\r\n  rpk redpanda [command]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for redpanda."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk topic": {
+        "description": "Create, delete, produce to and consume from Redpanda topics",
+        "usage": "Usage:\r\n  rpk topic [flags]\r\n  rpk topic [command]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for topic."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk version": {
+        "description": "Check the current version",
+        "usage": "Usage:\r\n  rpk version [flags]\r\n\r",
+        "flags": {
+            "-h, --help": {
+                "type": "-",
+                "description": "Help for version."
+            },
+            "--config": {
+                "type": "string",
+                "description": "Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/redpanda.yaml."
+            },
+            "-X, --config-opt": {
+                "type": "stringArray",
+                "description": "Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail."
+            },
+            "--profile": {
+                "type": "string",
+                "description": "rpk profile to use."
+            },
+            "-v, --verbose": {
+                "type": "-",
+                "description": "Enable verbose logging."
+            }
+        }
+    },
+    "rpk_version": "v23.2.14 (rev b5a8b9a28)\r"
+}

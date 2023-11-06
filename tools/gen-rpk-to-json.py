@@ -4,6 +4,9 @@ import json
 import os
 
 cmd_dict = {}
+basic_commands_docker = ["docker","exec","-it"] 
+basic_commands_docker.append("rp-0") #modify to your cluster name
+rpk_basic_command = ["rpk"]
 def assert_period(s):return s if s.endswith('.') else s + '.'
 
 class Flag:
@@ -16,9 +19,9 @@ class Flag:
 def execute_process(commands):
     if len(commands) > 0:
         commands = commands[0].split(" ")
-    commands.insert(0, "rpk")
-    commands.append("-h")
-    process = subprocess.run(commands, stdout=subprocess.PIPE)
+    commands_to_execute = basic_commands_docker + rpk_basic_command + commands
+    commands_to_execute.append("-h")
+    process = subprocess.run(commands_to_execute, stdout=subprocess.PIPE)
     return process.stdout.decode("utf-8")
 
 # Get the explanation written before the usage. Example:
@@ -222,8 +225,12 @@ def build_dict(cmd_dict, executed_command, explanation, usage, it_flags, flag_li
     return cmd_dict
 
 ## run basic command first
-result = subprocess.run(['rpk', 'version'], stdout=subprocess.PIPE)
+first_command = basic_commands_docker + rpk_basic_command + ["version"]
+print("Running ")
+print(" ".join(first_command))
+result = subprocess.run(first_command, stdout=subprocess.PIPE)
 rpk_version = result.stdout.decode('utf-8').strip(" \n")
+print("Redpanda version: " + rpk_version)
 result = execute_process([])
 explanation = get_explanation(result)
 usage = get_usage(result)
