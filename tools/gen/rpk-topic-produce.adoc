@@ -142,43 +142,43 @@ rpk topic produce [TOPIC] [flags]
 |===
 |*Value* |*Type* |*Description*
 
-|--acks ||int ||Number of acks required for producing (-1=all, 0=none, 1=leader) (default -1). |
+|`--acks` |int |Number of acks required for producing (-1=all, 0=none, 1=leader) (default -1).
 
-|--allow-auto-topic-creation ||- ||Auto-create non-existent topics; requires auto_create_topics_enabled on the broker. |
+|`--allow-auto-topic-creation` |- |Auto-create non-existent topics; requires auto_create_topics_enabled on the broker.
 
-|-z, --compression ||string ||Compression to use for producing batches (none, gzip, snappy, lz4, zstd) (default "snappy"). |
+|`-z, --compression` |string |Compression to use for producing batches (none, gzip, snappy, lz4, zstd) (default "snappy").
 
-|--delivery-timeout ||duration ||Per-record delivery timeout, if non-zero, min 1s. |
+|`--delivery-timeout` |duration |Per-record delivery timeout, if non-zero, min 1s.
 
-|-f, --format ||string ||Input record format (default "%v\n"). |
+|`-f, --format` |string |Input record format (default "%v\n").
 
-|-H, --header ||stringArray ||Headers in format key:value to add to each record (repeatable). |
+|`-H, --header` |stringArray |Headers in format key:value to add to each record (repeatable).
 
-|-h, --help ||- ||Help for produce. |
+|`-h, --help` |- |Help for produce.
 
-|-k, --key ||string ||A fixed key to use for each record (parsed input keys take precedence). |
+|`-k, --key` |string |A fixed key to use for each record (parsed input keys take precedence).
 
-|--max-message-bytes ||int32 ||If non-negative, maximum size of a record batch before compression (default -1). |
+|`--max-message-bytes` |int32 |If non-negative, maximum size of a record batch before compression (default -1).
 
-|-o, --output-format ||string ||what to write to stdout when a record is successfully produced (default "Produced to partition %p at offset %o with timestamp %d.\n"). |
+|`-o, --output-format` |string |what to write to stdout when a record is successfully produced (default "Produced to partition %p at offset %o with timestamp %d.\n").
 
-|-p, --partition ||int32 ||Partition to directly produce to, if non-negative (also allows %p parsing to set partitions) (default -1). |
+|`-p, --partition` |int32 |Partition to directly produce to, if non-negative (also allows %p parsing to set partitions) (default -1).
 
-|--proto-key-msg-type ||string ||Name of the protobuf message type to be used to encode the record key using schema registry. |
+|`--proto-key-msg-type` |string |Name of the protobuf message type to be used to encode the record key using schema registry.
 
-|--proto-msg-type ||string ||Name of the protobuf message type to be used to encode the record value using schema registry. |
+|`--proto-msg-type` |string |Name of the protobuf message type to be used to encode the record value using schema registry.
 
-|--schema-id ||int ||Schema ID to encode the record value with (default -1). |
+|`--schema-id` |int |Schema ID to encode the record value with (default -1).
 
-|--schema-key-id ||int ||Schema ID to encode the record key with (default -1). |
+|`--schema-key-id` |int |Schema ID to encode the record key with (default -1).
 
-|-Z, --tombstone ||- ||Produce empty values as tombstones. |
+|`-Z, --tombstone` |- |Produce empty values as tombstones.
 
-|--config ||string ||Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/`redpanda.yaml`. |
+|`--config` |string |Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/`redpanda.yaml`.
 
-|-X, --config-opt ||stringArray ||Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail. |
+|`-X, --config-opt` |stringArray |Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail.
 
-|--profile ||string ||rpk profile to use. |
+|`--profile` |string |rpk profile to use.
 
-|-v, --verbose ||- ||Enable verbose logging. |
+|`-v, --verbose` |- |Enable verbose logging.
 |===

@@ -89,31 +89,31 @@ rpk debug bundle [flags]
 |===
 |*Value* |*Type* |*Description*
 
-|--controller-logs-size-limit ||string ||The size limit of the controller logs that can be stored in the bundle (e.g. 3MB, 1GiB) (default "20MB"). |
+|`--controller-logs-size-limit` |string |The size limit of the controller logs that can be stored in the bundle (e.g. 3MB, 1GiB) (default "20MB").
 
-|-h, --help ||- ||Help for bundle. |
+|`-h, --help` |- |Help for bundle.
 
-|--logs-since ||string ||Include log entries on or newer than the specified date (journalctl date format, e.g. YYYY-MM-DD. |
+|`--logs-since` |string |Include log entries on or newer than the specified date (journalctl date format, e.g. YYYY-MM-DD.
 
-|--logs-size-limit ||string ||Read the logs until the given size is reached (e.g. 3MB, 1GiB) (default "100MiB"). |
+|`--logs-size-limit` |string |Read the logs until the given size is reached (e.g. 3MB, 1GiB) (default "100MiB").
 
-|--logs-until ||string ||Include log entries on or older than the specified date (journalctl date format, e.g. YYYY-MM-DD. |
+|`--logs-until` |string |Include log entries on or older than the specified date (journalctl date format, e.g. YYYY-MM-DD.
 
-|--metrics-interval ||duration ||Interval between metrics snapshots (e.g. 30s, 1.5m) (default 10s). |
+|`--metrics-interval` |duration |Interval between metrics snapshots (e.g. 30s, 1.5m) (default 10s).
 
-|-n, --namespace ||string ||The namespace to use to collect the resources from (k8s only) (default "redpanda"). |
+|`-n, --namespace` |string |The namespace to use to collect the resources from (k8s only) (default "redpanda").
 
-|-o, --output ||string ||The file path where the debug file will be written (default ./&lt;timestamp&gt;-bundle.zip). |
+|`-o, --output` |string |The file path where the debug file will be written (default ./&lt;timestamp&gt;-bundle.zip).
 
-|--timeout ||duration ||How long to wait for child commands to execute (e.g. 30s, 1.5m) (default 12s). |
+|`--timeout` |duration |How long to wait for child commands to execute (e.g. 30s, 1.5m) (default 12s).
 
-|--upload-url ||string ||If provided, where to upload the bundle in addition to creating a copy on disk. |
+|`--upload-url` |string |If provided, where to upload the bundle in addition to creating a copy on disk.
 
-|--config ||string ||Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/`redpanda.yaml`. |
+|`--config` |string |Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/`redpanda.yaml`.
 
-|-X, --config-opt ||stringArray ||Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail. |
+|`-X, --config-opt` |stringArray |Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail.
 
-|--profile ||string ||rpk profile to use. |
+|`--profile` |string |rpk profile to use.
 
-|-v, --verbose ||- ||Enable verbose logging. |
+|`-v, --verbose` |- |Enable verbose logging.
 |===

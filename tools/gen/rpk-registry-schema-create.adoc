@@ -38,21 +38,21 @@ rpk registry schema create SUBJECT --schema {filename} [flags]
 |===
 |*Value* |*Type* |*Description*
 
-|-h, --help ||- ||Help for create. |
+|`-h, --help` |- |Help for create.
 
-|--references ||string ||Comma-separated list of references (name:subject:version) or path to reference file. |
+|`--references` |string |Comma-separated list of references (name:subject:version) or path to reference file.
 
-|--schema ||string ||Schema filepath to upload, must be .avro, .avsc, or .proto. |
+|`--schema` |string |Schema filepath to upload, must be .avro, .avsc, or .proto.
 
-|--type ||string ||Schema type (avro,protobuf); overrides schema file extension. |
+|`--type` |string |Schema type (avro,protobuf); overrides schema file extension.
 
-|--config ||string ||Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/`redpanda.yaml`. |
+|`--config` |string |Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/`redpanda.yaml`.
 
-|-X, --config-opt ||stringArray ||Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail. |
+|`-X, --config-opt` |stringArray |Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail.
 
-|--format ||string ||Output format (json,yaml,text,wide,help) (default "text"). |
+|`--format` |string |Output format (json,yaml,text,wide,help) (default "text").
 
-|--profile ||string ||rpk profile to use. |
+|`--profile` |string |rpk profile to use.
 
-|-v, --verbose ||- ||Enable verbose logging. |
+|`-v, --verbose` |- |Enable verbose logging.
 |===

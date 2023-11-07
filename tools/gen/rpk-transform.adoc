@@ -13,7 +13,9 @@ rpk transform [flags]
 
 == Aliases
 
-[,bash]----transform, wasm, transfrom
+[,bash]
+----
+transform, wasm, transfrom
 ----
 
 == Flags
@@ -22,13 +24,13 @@ rpk transform [flags]
 |===
 |*Value* |*Type* |*Description*
 
-|-h, --help ||- ||Help for transform. |
+|`-h, --help` |- |Help for transform.
 
-|--config ||string ||Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/`redpanda.yaml`. |
+|`--config` |string |Redpanda or rpk config file; default search paths are ~/.config/rpk/rpk.yaml, $PWD, and /etc/redpanda/`redpanda.yaml`.
 
-|-X, --config-opt ||stringArray ||Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail. |
+|`-X, --config-opt` |stringArray |Override rpk configuration settings; '-X help' for detail or '-X list' for terser detail.
 
-|--profile ||string ||rpk profile to use. |
+|`--profile` |string |rpk profile to use.
 
-|-v, --verbose ||- ||Enable verbose logging. |
+|`-v, --verbose` |- |Enable verbose logging.
 |===

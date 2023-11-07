@@ -3698,7 +3698,7 @@
         }
     },
     "rpk redpanda tune": {
-        "description": "Sets the OS parameters to tune system performance.\r\n\r\nAvailable tuners:\r\n\r\n  - all.\r\n  - disk_scheduler\r\n  - disk_write_cache\r\n  - transparent_hugepages\r\n  - coredump\r\n  - net\r\n  - cpu\r\n  - aio_events\r\n  - clocksource\r\n  - swappiness\r\n  - ballast_file\r\n  - disk_irq\r\n  - fstrim\r\n  - disk_nomerges\r\n\r\nTo learn more about a tuner, run 'rpk redpanda tune help <tuner name>'.",
+        "description": "Sets the OS parameters to tune system performance.\r\n\r\nAvailable tuners:\r\n\r\n  - all.\r\n  - net\r\n  - swappiness\r\n  - fstrim\r\n  - clocksource\r\n  - coredump\r\n  - ballast_file\r\n  - disk_nomerges\r\n  - disk_write_cache\r\n  - cpu\r\n  - transparent_hugepages\r\n  - disk_scheduler\r\n  - aio_events\r\n  - disk_irq\r\n\r\nTo learn more about a tuner, run 'rpk redpanda tune help <tuner name>'.",
         "usage": "Usage:\r\n  rpk redpanda tune [list of elements to tune] [flags]\r\n  rpk redpanda tune [command]\r\n\r",
         "flags": {
             "--cpu-set": {

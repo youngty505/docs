@@ -296,85 +296,6 @@ def build_dict(cmd_dict, executed_command, explanation, usage, it_flags, flag_li
     return cmd_dict
 
 
-# Build the resulting asciidoc file
-def build_ascii(md_result, executed_command, explanation, usage, it_flags, flag_list, separate_files):
-
-    rpk_gen_dir = "gen/"
-
-    if separate_files:
-        md_result += "---"
-        md_result += "\ntitle: " + executed_command
-        md_result += "\nrpk_version: " + rpk_version
-        md_result += "\n---"
-
-    else:
-        md_result += "\n## " + executed_command
-    
-    md_result += "\n\n " + explanation
-
-    usage_val_start = usage.find("Usage:") + len("Usage:")
-    aliases_start = usage.find("Aliases:")
-    aliases_val_start = usage.find("Aliases:") + len("Aliases:")
-
-    usage_val = usage[usage_val_start:aliases_start] if aliases_start >= 0 else usage[usage_val_start:]
-
-    md_result += "\n\n## Usage"
-    md_result += """\n\n```bash\n"""
-    md_result += usage_val.strip()
-    md_result += """\n```"""
-
-    if aliases_start >= 0:
-        md_result += "\n\n## Aliases"
-        md_result += """\n\n```bash\n"""
-        md_result += usage[aliases_val_start:].strip()
-        md_result += """\n```"""
-
-    if it_flags:
-        md_result += """ \n\n## Flags\n
-<table>
-<tbody>
-<tr>
-<td><strong>Value</strong>
-</td>
-<td><strong>Type</strong>
-</td>
-<td><strong>Description</strong>
-</td>
-</tr>"""
-    for flag in flag_list:
-        md_result += """<tr>"""
-        md_result += """<td>"""
-        md_result += flag.value
-        md_result += """</td>"""
-        md_result += """<td>"""
-        md_result += flag.type
-        md_result += """</td>"""
-        md_result += """<td>"""
-        md_result += flag.explanation
-        md_result += """</td>"""
-        md_result += """</tr>"""
-    md_result += """</tbody></table>"""
-
-    md_result += "\n"
-
-    if separate_files:
-        filename = rpk_gen_dir + executed_command.replace(" ","-") + ".adoc"
-
-        # Check if directory exists, if not create it
-        if not os.path.exists(rpk_gen_dir):
-            os.makedirs(rpk_gen_dir)
-
-        # Check if file exists, if it does then delete it
-        if os.path.exists(filename):
-            os.remove(filename)
-
-        # Write to the file
-        with open(filename, "w") as filetowrite:
-            md_result = escape_chars(md_result)
-            filetowrite.write(md_result)
-
-    return md_result
-
 def build_ascii(ascii_result, executed_command, explanation, usage, it_flags, flag_list, separate_files):
 
     rpk_gen_dir = "gen/"
@@ -396,8 +317,8 @@ def build_ascii(ascii_result, executed_command, explanation, usage, it_flags, fl
 
     if aliases_start >= 0:
         ascii_result += "\n\n== Aliases"
-        ascii_result += """\n\n[,bash]"""
-        ascii_result += """----"""
+        ascii_result += """\n\n[,bash]\n"""
+        ascii_result += """----\n"""
         ascii_result += usage[aliases_val_start:].strip()
         ascii_result += """\n----"""
 
@@ -409,9 +330,9 @@ def build_ascii(ascii_result, executed_command, explanation, usage, it_flags, fl
 
     for flag in flag_list:
         ascii_result += """\n\n"""
-        ascii_result += "|"+flag.value+" |"
-        ascii_result += "|"+flag.type+" |"
-        ascii_result += "|"+flag.explanation+" |"
+        ascii_result += "|`"+flag.value+"` |"
+        ascii_result += flag.type+" |"
+        ascii_result += flag.explanation
 
     ascii_result += "\n|==="
     filename = rpk_gen_dir + executed_command.replace(" ","-") + ".adoc"
